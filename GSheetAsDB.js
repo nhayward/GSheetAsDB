@@ -13,17 +13,28 @@
  * (https://github.com/nhayward/GSheetAsDB/blob/master/LICENSE)
  */
 
-function getSheetData(sheetID, tab) {
-	tab = tab ? tab : 1;
-	var sheetURL = 'https://spreadsheets.google.com/feeds/list/' + sheetID + '/' + tab + '/public/values?alt=json';
-	$.getJSON(sheetURL).done(function(data) {
-		return data.feed.entry;
+function initSheetData() {
+	var tab = sheet.tab ? sheet.tab : 1;
+	var sheetURL = 'https://spreadsheets.google.com/feeds/list/' + sheet.id + '/' + tab + '/public/values?alt=json';
+	$.getJSON(sheetURL, function(data) {
+		var sheetData = [];
+		var rowData = {};
+		$.each(data.feed.entry, function() {
+			$.each($(this)[0], function(key, value) {
+				if (key.startsWith("gsx$")) {
+					rowData[key.substring(4)] = value.$t;
+				}
+			});
+			sheetData.push(rowData);
+			rowData = {};
+		});
+		sheet.data = sheetData;
 	});
 }
 
-function postDataToSheet(scriptURL, data) {
+function postDataToSheet(data) {
 	$.post(
-		scriptURL,
+		sheet.postScriptURL,
 		data // creates a new row with the data you send here
 	);
 }
