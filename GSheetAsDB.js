@@ -39,12 +39,15 @@ function initSheetData() {
 		});
 		// set the sheetData array as the value of the "data" key in the sheet object
 		sheet.data = sheetData;
+	}).always(function() {
+		// allow any further JavaScript that is within $(document).ready(...) to execute now
+		$.holdReady(false);
 	});
 }
 
 function postDataToSheet(data) {
 	$.post(
 		sheet.postScriptURL,
-		data // creates a new row with the data you send here
+		data // creates a new row with the data you provide here
 	);
 }
