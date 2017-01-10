@@ -46,8 +46,22 @@ function initSheetData() {
 }
 
 function postDataToSheet(data) {
+	// post to your sheet using the sheet's Google script
 	$.post(
 		sheet.postScriptURL,
 		data // creates a new row with the data you provide here
 	);
+	// now we will update the sheet.data object on the front end
+	// 
+	// the data keys must be massaged to look like they do when
+	// spreadsheet data is returned
+	for (var key in data) {
+		// lowercase the key and remove anything non-alphanumeric
+		var newKey = key.toLowerCase().replace(/[^a-zA-Z0-9]/gi, "");
+		data[newKey] = data[key];
+		// remove the old key
+		delete data[key];
+	}
+	// update the data object on the front end
+	sheet.data.push(data);
 }
